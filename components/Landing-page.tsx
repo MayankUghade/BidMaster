@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { Button } from "./ui/button";
+import { signIn } from "next-auth/react";
 
 export default function LandingPage() {
   return (
@@ -19,20 +23,18 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link
-                    href="#"
+                  <Button
+                    onClick={() => signIn("google")}
                     className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                    prefetch={false}
                   >
                     Start Bidding
-                  </Link>
-                  <Link
-                    href="#"
-                    className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                    prefetch={false}
+                  </Button>
+                  <Button
+                    onClick={() => signIn("google")}
+                    className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:text-white text-black"
                   >
                     Sell an Item
-                  </Link>
+                  </Button>
                 </div>
               </div>
               <img

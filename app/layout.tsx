@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
+import { EdgeStoreProvider } from "@/utils/edgestore";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,8 +28,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <NavBar />
-            {children}{" "}
+            <EdgeStoreProvider>
+              <NavBar />
+              {children}
+            </EdgeStoreProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

@@ -7,28 +7,26 @@ import { ModeToggle } from "./mode-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { Separator } from "./ui/separator";
 import Link from "next/link";
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 
 export default function NavBar() {
   const { data: session } = useSession();
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <div className="p-5 lg:container flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 cursor-pointer">
           <Image src="/bid.png" alt="logo" width={50} height={50} />
-          <h1 className="text-lg font-bold sm:flex hidden">BidMaster</h1>
-        </div>
+          <h1 className="text-lg font-bold">BidMaster</h1>
+        </Link>
 
         <div className="flex items-center">
           {session ? (
             <div className="flex items-center">
-              <Button>Your Posts</Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="link">
@@ -60,7 +58,7 @@ export default function NavBar() {
                   <h2 className="text-sm text-gray-500 mb-2">
                     {session.user?.email}
                   </h2>
-                  <DropdownMenuSeparator />
+                  <Separator />
                   <Button
                     type="submit"
                     variant="link"
@@ -74,7 +72,7 @@ export default function NavBar() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Button type="submit" onClick={() => signIn()}>
+              <Button type="submit" onClick={() => signIn("google")}>
                 SignIn
               </Button>
               <ModeToggle />

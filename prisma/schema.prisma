@@ -58,3 +58,13 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verificationtokens")
 }
+
+model Item {
+  id          String   @id @default(cuid())
+  userEmail   String
+  item        String
+  description String
+  price       Float
+  endDate     DateTime @default(now())
+  images      String[]
+}
