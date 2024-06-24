@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -32,6 +32,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { createItem } from "./actions";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   item: z.string().min(2, {
@@ -55,6 +57,10 @@ const formSchema = z.object({
 export function AuctionForm() {
   const [fileStates, setFileStates] = useState<FileState[]>([]);
   const [date, setDate] = React.useState<Date>();
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
   const { edgestore } = useEdgeStore();
 
   function updateFileProgress(key: string, progress: FileState["progress"]) {
@@ -101,7 +107,16 @@ export function AuctionForm() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setLoading(true);
+    try {
+      createItem(values);
+      form.reset();
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to create item:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -149,7 +164,12 @@ export function AuctionForm() {
             <FormItem>
               <FormLabel>Item price</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="10234" {...field} />
+                <Input
+                  type="number"
+                  placeholder="10234"
+                  value={field.value}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormDescription>This is the price for item.</FormDescription>
               <FormMessage />
@@ -191,7 +211,10 @@ export function AuctionForm() {
                             <Calendar
                               mode="single"
                               selected={date}
-                              onSelect={setDate}
+                              onSelect={(selectedDate) => {
+                                setDate(selectedDate);
+                                field.onChange(selectedDate);
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
@@ -243,7 +266,16 @@ export function AuctionForm() {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        {loading ? (
+          <Button disabled className="w-fit">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Please wait
+          </Button>
+        ) : (
+          <Button type="submit" className="w-fit">
+            Submit
+          </Button>
+        )}
       </form>
     </Form>
   );
