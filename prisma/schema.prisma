@@ -46,6 +46,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  items         Item[]
 
   @@map("users")
 }
@@ -62,9 +63,13 @@ model VerificationToken {
 model Item {
   id          String   @id @default(cuid())
   userEmail   String
+  createdAt   DateTime @default(now())
   item        String
   description String
   price       Float
   endDate     DateTime @default(now())
   images      String[]
+  user        User     @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+
+  @@map("items")
 }

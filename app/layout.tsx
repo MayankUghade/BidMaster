@@ -5,6 +5,7 @@ import "./globals.css";
 import NavBar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { EdgeStoreProvider } from "@/utils/edgestore";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <NextTopLoader />
             <EdgeStoreProvider>
               <NavBar />
               {children}
