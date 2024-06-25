@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/form";
 import { createBid } from "./actions";
 import { useSession } from "next-auth/react";
+import { Item } from "@prisma/client";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const formSchema = z.object({
   bid_amount: z.number().min(1, {
@@ -34,10 +37,21 @@ const formSchema = z.object({
   }),
 });
 
-export default function Bid({ itemId }: { itemId: string }) {
+export default function Bid({
+  itemId,
+  item,
+  price,
+}: {
+  itemId: string;
+  item: Item;
+  price: number;
+}) {
   const { data: session } = useSession();
   const userEmail = session?.user?.email as string;
   const [loading, setLoading] = useState(false);
+  const [maxBid, setMaxBid] = useState(price);
+
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,11 +61,29 @@ export default function Bid({ itemId }: { itemId: string }) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const bids = item.bids || [];
+    const maximumBid =
+      bids.length > 0
+        ? Math.max(...bids.map((bid: any) => bid.bid_amount))
+        : price;
     setLoading(true);
 
     try {
-      await createBid(values, userEmail, itemId);
-      form.reset();
+      if (
+        (maximumBid === item.price && values.bid_amount > maximumBid) ||
+        values.bid_amount > maximumBid
+      ) {
+        await createBid(values, userEmail, itemId);
+        form.reset();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description:
+            "The bid amount should be more than the current maximum bid or the starting price.",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+      }
     } catch (error) {
       console.error("Error submitting bid:", error);
     } finally {
@@ -61,9 +93,14 @@ export default function Bid({ itemId }: { itemId: string }) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button>Create a Bid</Button>
-      </DialogTrigger>
+      {item.userEmail === userEmail ? (
+        <Button disabled>You can't bid on your own listing</Button>
+      ) : (
+        <DialogTrigger asChild>
+          <Button>Create a Bid</Button>
+        </DialogTrigger>
+      )}
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Place a Bid</DialogTitle>

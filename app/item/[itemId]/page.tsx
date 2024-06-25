@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchSingleItem } from "./actions";
 import Bid from "./bid";
+import ItemCard from "@/components/Dashboard/Card";
+import { formatDistance } from "date-fns";
 
 interface PageProps {
   params: {
@@ -60,7 +62,7 @@ export default async function Page({ params }: PageProps) {
               Ends: {new Date(item.endDate).toLocaleDateString()}
             </div>
           </div>
-          <Bid itemId={itemId} />
+          <Bid itemId={itemId} item={item} price={item.price} />
         </div>
       </div>
       <div className="grid gap-4 md:gap-10 items-start">
@@ -88,7 +90,9 @@ export default async function Page({ params }: PageProps) {
                     </div>
                   </div>
                   <div className="text-muted-foreground text-sm">
-                    {new Date(bid.createdAt).toLocaleTimeString()}
+                    {formatDistance(bid.createdAt, new Date(), {
+                      addSuffix: true,
+                    })}
                   </div>
                 </div>
               ))}

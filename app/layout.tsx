@@ -6,6 +6,7 @@ import NavBar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { EdgeStoreProvider } from "@/utils/edgestore";
 import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
             <EdgeStoreProvider>
               <NavBar />
               {children}
+              <Toaster />
             </EdgeStoreProvider>
           </ThemeProvider>
         </SessionProvider>
