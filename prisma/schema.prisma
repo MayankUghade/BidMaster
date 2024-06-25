@@ -47,6 +47,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   items         Item[]
+  bid           Bid[]
 
   @@map("users")
 }
@@ -69,7 +70,20 @@ model Item {
   price       Float
   endDate     DateTime @default(now())
   images      String[]
-  user        User     @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  bid         Bid[]
+
+  user User @relation(fields: [userEmail], references: [email], onDelete: Cascade)
 
   @@map("items")
+}
+
+model Bid {
+  id         String   @id @default(cuid())
+  userEmail  String
+  itemId     String
+  bid_amount Float
+  createdAt  DateTime @default(now())
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userEmail], references: [email], onDelete: Cascade)
 }

@@ -9,6 +9,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Item } from "@prisma/client";
+import Link from "next/link";
 
 interface ItemCardProps {
   item: Item;
@@ -62,7 +63,9 @@ export default function ItemCard({ item }: ItemCardProps) {
             days
           </div>
         </div>
-        <Button className="w-full">Place Bid</Button>
+        <Button className="w-full" asChild>
+          <Link href={`/item/${item.id}`}>Place Bid</Link>
+        </Button>
       </CardContent>
     </Card>
   );

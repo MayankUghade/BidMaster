@@ -168,7 +168,7 @@ export function AuctionForm() {
                   type="number"
                   placeholder="10234"
                   value={field.value}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e: any) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormDescription>This is the price for item.</FormDescription>

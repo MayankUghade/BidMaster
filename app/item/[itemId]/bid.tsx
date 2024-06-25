@@ -1,0 +1,116 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { createBid } from "./actions";
+import { useSession } from "next-auth/react";
+
+const formSchema = z.object({
+  bid_amount: z.number().min(1, {
+    message: "Bid amount must be at least $1",
+  }),
+});
+
+export default function Bid({ itemId }: { itemId: string }) {
+  const { data: session } = useSession();
+  const userEmail = session?.user?.email as string;
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      bid_amount: 0,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+
+    try {
+      await createBid(values, userEmail, itemId);
+      form.reset();
+    } catch (error) {
+      console.error("Error submitting bid:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>Create a Bid</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Place a Bid</DialogTitle>
+          <DialogDescription>
+            Enter the amount you would like to bid on this item.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="bid_amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="bid-amount" className="text-right">
+                      Bid Amount
+                    </Label>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="$100"
+                        value={field.value}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Add the price at which you want to bid
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                {loading ? (
+                  <Button disabled>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </Button>
+                ) : (
+                  <Button type="submit">Place Bid</Button>
+                )}
+              </DialogFooter>
+            </form>
+          </Form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
