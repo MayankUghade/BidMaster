@@ -9,13 +9,16 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signIn, signOut } from "next-auth/react";
-import { useSession } from "next-auth/react";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
+import {
+  LoginLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 export default function NavBar() {
-  const { data: session } = useSession();
+  const { isAuthenticated, user } = useKindeBrowserClient();
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <div className="p-5 lg:container flex items-center justify-between">
@@ -25,7 +28,7 @@ export default function NavBar() {
         </Link>
 
         <div className="flex items-center">
-          {session ? (
+          {isAuthenticated ? (
             <div className="flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -33,9 +36,9 @@ export default function NavBar() {
                     <Avatar>
                       <AvatarImage
                         src={
-                          session.user?.image ??
+                          user?.picture ??
                           `https://avatar.vercel.sh/${
-                            session.user?.name as string
+                            user?.given_name as string
                           }`
                         }
                         alt="@shadcn"
@@ -49,31 +52,26 @@ export default function NavBar() {
                   align="end"
                   forceMount
                 >
-                  {session.user?.name ? (
-                    <h1>{session.user?.name as string}</h1>
+                  {user?.given_name ? (
+                    <h1>{user.given_name as string}</h1>
                   ) : (
                     <h1>User</h1>
                   )}
 
-                  <h2 className="text-sm text-gray-500 mb-2">
-                    {session.user?.email}
-                  </h2>
+                  <h2 className="text-sm text-gray-500 mb-2">{user?.email}</h2>
                   <Separator />
-                  <Button
-                    type="submit"
-                    variant="link"
-                    onClick={() => signOut()}
-                  >
-                    LogOut
-                  </Button>
+                  <Button type="submit" variant="link"></Button>
                 </DropdownMenuContent>
               </DropdownMenu>
               <ModeToggle />
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Button type="submit" onClick={() => signIn("google")}>
-                SignIn
+              <Button type="submit">
+                <LoginLink>Sign in </LoginLink>
+              </Button>
+              <Button type="submit">
+                <RegisterLink>Register</RegisterLink>
               </Button>
               <ModeToggle />
             </div>

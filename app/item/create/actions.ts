@@ -1,15 +1,17 @@
 "use server";
 
-import { auth } from "@/utils/auth";
 import prisma from "@/utils/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export async function createItem(ItemData: any) {
-  revalidatePath("/");
-  const session = await auth();
-  const userEmail = session?.user?.email;
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  const userEmail = user?.email;
 
   await prisma.item.create({
     data: { ...ItemData, userEmail },
   });
+  revalidatePath("/");
 }

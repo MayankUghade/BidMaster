@@ -3,7 +3,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/Navbar";
-import { SessionProvider } from "next-auth/react";
 import { EdgeStoreProvider } from "@/utils/edgestore";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/toaster";
@@ -23,21 +22,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <NextTopLoader />
-            <EdgeStoreProvider>
-              <NavBar />
-              {children}
-              <Toaster />
-            </EdgeStoreProvider>
-          </ThemeProvider>
-        </SessionProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextTopLoader />
+          <EdgeStoreProvider>
+            <NavBar />
+            {children}
+            <Toaster />
+          </EdgeStoreProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

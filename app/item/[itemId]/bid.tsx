@@ -30,6 +30,7 @@ import { useSession } from "next-auth/react";
 import { Item } from "@prisma/client";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const formSchema = z.object({
   bid_amount: z.number().min(1, {
@@ -46,8 +47,8 @@ export default function Bid({
   item: Item;
   price: number;
 }) {
-  const { data: session } = useSession();
-  const userEmail = session?.user?.email as string;
+  const { user } = useKindeBrowserClient();
+  const userEmail = user?.email as string;
   const [loading, setLoading] = useState(false);
   const [maxBid, setMaxBid] = useState(price);
 

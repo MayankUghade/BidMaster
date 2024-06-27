@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchSingleItem } from "./actions";
 import Bid from "./bid";
-import ItemCard from "@/components/Dashboard/Card";
 import { formatDistance } from "date-fns";
 
 interface PageProps {
@@ -52,14 +51,17 @@ export default async function Page({ params }: PageProps) {
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold">{item.item}</h1>
             <h2 className="text-sm text-muted-foreground">
-              Listed {new Date(item.createdAt).toDateString()}
+              Listed: {new Date(item.createdAt).toDateString()}
             </h2>
           </div>
           <p className="text-muted-foreground">{item.description}</p>
           <div className="flex items-center justify-between gap-2">
             <div className="text-2xl font-bold">${item.price.toFixed(2)}</div>
             <div className="text-sm text-muted-foreground">
-              Ends: {new Date(item.endDate).toLocaleDateString()}
+              Ends:{" "}
+              {formatDistance(item.createdAt, new Date(), {
+                addSuffix: true,
+              })}
             </div>
           </div>
           <Bid itemId={itemId} item={item} price={item.price} />
@@ -72,30 +74,38 @@ export default async function Page({ params }: PageProps) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-5 mt-5">
-              {item.bid.map((bid, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-5 border-b p-3"
-                >
-                  <Avatar className="border w-10 h-10">
-                    <AvatarImage
-                      src={bid.user.image || "/placeholder-user.jpg"}
-                    />
-                    <AvatarFallback>BM</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="font-medium">{bid.user.name}</div>
-                    <div className="text-muted-foreground">
-                      ${bid.bid_amount.toFixed(2)}
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground text-sm">
-                    {formatDistance(bid.createdAt, new Date(), {
-                      addSuffix: true,
-                    })}
-                  </div>
+              {item.bid.length === 0 ? (
+                <div className="text-center text-muted-foreground">
+                  No bids yet. Be the first to place a bid!
                 </div>
-              ))}
+              ) : (
+                <div>
+                  {item.bid.map((bid, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-5 border-b p-3"
+                    >
+                      <Avatar className="border w-10 h-10">
+                        <AvatarImage
+                          src={bid.user.image || "/placeholder-user.jpg"}
+                        />
+                        <AvatarFallback>BM</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="font-medium">{bid.user.firstName}</div>
+                        <div className="text-muted-foreground">
+                          ${bid.bid_amount.toFixed(2)}
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground text-sm">
+                        {formatDistance(bid.createdAt, new Date(), {
+                          addSuffix: true,
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
         </ScrollArea>

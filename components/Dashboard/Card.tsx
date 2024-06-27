@@ -10,15 +10,18 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Item } from "@prisma/client";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 interface ItemCardProps {
   item: Item;
 }
 
 export default function ItemCard({ item }: ItemCardProps) {
+  const isBidEnded = new Date(item.endDate) === new Date();
+
   return (
     <Card className="w-full max-w-lg">
-      <Carousel className="rounded-t-lg overflow-hidden">
+      <Carousel className="rounded-t-lg overflow-hidden relative">
         <CarouselContent>
           {item.images.map((image, index) => (
             <CarouselItem key={index}>
@@ -36,7 +39,7 @@ export default function ItemCard({ item }: ItemCardProps) {
         <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
       </Carousel>
       <CardContent className="p-6 grid gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex  items-center gap-4">
           <Avatar className="border w-10 h-10">
             <AvatarImage src={item.user.image || "/placeholder-user.jpg"} />
             <AvatarFallback>CN</AvatarFallback>
@@ -63,9 +66,15 @@ export default function ItemCard({ item }: ItemCardProps) {
             days
           </div>
         </div>
-        <Button className="w-full" asChild>
-          <Link href={`/item/${item.id}`}>Place Bid</Link>
-        </Button>
+        {isBidEnded ? (
+          <Button className="w-full" variant="destructive">
+            Bidding Over
+          </Button>
+        ) : (
+          <Button className="w-full" asChild>
+            <Link href={`/item/${item.id}`}>Place Bid</Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
