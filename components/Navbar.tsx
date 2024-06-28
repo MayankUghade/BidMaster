@@ -13,9 +13,11 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import {
   LoginLink,
+  LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { LogOut } from "lucide-react";
 
 export default function NavBar() {
   const { isAuthenticated, user } = useKindeBrowserClient();
@@ -35,13 +37,8 @@ export default function NavBar() {
                   <Button variant="link">
                     <Avatar>
                       <AvatarImage
-                        src={
-                          user?.picture ??
-                          `https://avatar.vercel.sh/${
-                            user?.given_name as string
-                          }`
-                        }
-                        alt="@shadcn"
+                        src={user?.picture as string}
+                        alt="Profile Image"
                       />
                       <AvatarFallback>SK</AvatarFallback>
                     </Avatar>
@@ -60,7 +57,9 @@ export default function NavBar() {
 
                   <h2 className="text-sm text-gray-500 mb-2">{user?.email}</h2>
                   <Separator />
-                  <Button type="submit" variant="link"></Button>
+                  <Button type="submit" variant="link">
+                    <LogoutLink> Logout</LogoutLink>
+                  </Button>
                 </DropdownMenuContent>
               </DropdownMenu>
               <ModeToggle />

@@ -26,10 +26,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createBid } from "./actions";
-import { useSession } from "next-auth/react";
 import { Item } from "@prisma/client";
 import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const formSchema = z.object({
@@ -50,7 +48,6 @@ export default function Bid({
   const { user } = useKindeBrowserClient();
   const userEmail = user?.email as string;
   const [loading, setLoading] = useState(false);
-  const [maxBid, setMaxBid] = useState(price);
 
   const { toast } = useToast();
 
@@ -71,7 +68,7 @@ export default function Bid({
 
     try {
       if (
-        (maximumBid === item.price && values.bid_amount > maximumBid) ||
+        (maximumBid === item.price && values.bid_amount >= maximumBid) ||
         values.bid_amount > maximumBid
       ) {
         await createBid(values, userEmail, itemId);
@@ -82,7 +79,6 @@ export default function Bid({
           title: "Uh oh! Something went wrong.",
           description:
             "The bid amount should be more than the current maximum bid or the starting price.",
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       }
     } catch (error) {

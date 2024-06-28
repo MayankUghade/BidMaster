@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchSingleItem } from "./actions";
 import Bid from "./bid";
@@ -26,6 +26,12 @@ export default async function Page({ params }: PageProps) {
   if (!item) {
     return <div>Item not found</div>;
   }
+
+  const isBidEnded = new Date(item.endDate) <= new Date();
+  const maximumBid =
+    item.bid.length > 0
+      ? Math.max(...item.bid.map((bid: any) => bid.bid_amount))
+      : item.price;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto p-4 md:p-8">
@@ -56,15 +62,21 @@ export default async function Page({ params }: PageProps) {
           </div>
           <p className="text-muted-foreground">{item.description}</p>
           <div className="flex items-center justify-between gap-2">
-            <div className="text-2xl font-bold">${item.price.toFixed(2)}</div>
+            <div className="text-2xl font-bold">Max Bid: ${maximumBid}</div>
             <div className="text-sm text-muted-foreground">
               Ends:{" "}
-              {formatDistance(item.createdAt, new Date(), {
+              {formatDistance(new Date(), new Date(item.endDate), {
                 addSuffix: true,
               })}
             </div>
           </div>
-          <Bid itemId={itemId} item={item} price={item.price} />
+          {isBidEnded ? (
+            <Button className="w-full" variant="destructive">
+              Bidding Over
+            </Button>
+          ) : (
+            <Bid itemId={itemId} item={item} price={item.price} />
+          )}
         </div>
       </div>
       <div className="grid gap-4 md:gap-10 items-start">

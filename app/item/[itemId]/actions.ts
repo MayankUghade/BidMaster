@@ -39,12 +39,31 @@ export async function createBid(
     throw new Error("User not authenticated");
   }
 
-  revalidatePath(`/item/${itemId}`);
-  await prisma.bid.create({
-    data: {
-      itemId,
+  const existingBid = await prisma.bid.findFirst({
+    where: {
       userEmail,
-      ...values,
+      itemId,
     },
   });
+
+  if (existingBid) {
+    await prisma.bid.update({
+      where: {
+        id: existingBid.id,
+      },
+      data: {
+        ...values,
+      },
+    });
+  } else {
+    await prisma.bid.create({
+      data: {
+        itemId,
+        userEmail,
+        ...values,
+      },
+    });
+  }
+
+  revalidatePath(`/item/${itemId}`);
 }

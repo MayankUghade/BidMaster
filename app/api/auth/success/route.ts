@@ -23,7 +23,7 @@ export async function GET() {
         lastName: user.family_name ?? "",
         email: user.email ?? "",
         image:
-          (user.picture as string) ??
+          user.picture ??
           `https://avatar.vercel.sh/${user?.given_name as string}`,
       },
     });

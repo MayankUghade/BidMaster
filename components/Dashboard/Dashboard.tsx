@@ -21,7 +21,11 @@ export default async function Dashboard() {
         </div>
 
         <div className="flex gap-2 mt-2">
-          <Button>Your Items</Button>
+          <Button asChild>
+            <Link href="/your_items" passHref>
+              Your Auctions
+            </Link>
+          </Button>
           <Link href="/item/create" passHref>
             <Button>New Auction</Button>
           </Link>
