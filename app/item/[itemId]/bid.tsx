@@ -58,6 +58,9 @@ export default function Bid({
     },
   });
 
+  const currentDate = new Date();
+  const isBidEnded = new Date(item.endDate) <= currentDate;
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const bids = item.bid || [];
     const maximumBid =
@@ -92,6 +95,8 @@ export default function Bid({
     <Dialog>
       {item.userEmail === userEmail ? (
         <Button disabled>You can't bid on your own listing</Button>
+      ) : isBidEnded ? (
+        <Button disabled>Bidding has ended</Button>
       ) : (
         <DialogTrigger asChild>
           <Button>Create a Bid</Button>

@@ -68,7 +68,7 @@ export default async function ItemCard({ item }: ItemCardProps) {
         </div>
         {isBidEnded ? (
           <Button className="w-full" variant="destructive">
-            Bidding Over
+            <Link href={`/item/${item.id}`}>Bidding Over</Link>
           </Button>
         ) : (
           <Button className="w-full" asChild>
