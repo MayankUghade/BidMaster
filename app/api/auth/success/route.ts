@@ -32,7 +32,7 @@ export async function GET() {
       });
     }
 
-    return NextResponse.redirect("http://localhost:3000");
+    return NextResponse.redirect("https://bid-master.vercel.app");
   } catch (error) {
     console.error("Error during authentication process:", error);
     return new Response("Error during authentication", { status: 500 });
