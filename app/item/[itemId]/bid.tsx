@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createBid } from "./actions";
-import { Item } from "@prisma/client";
+import type { Item, Bid } from "@prisma/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
@@ -42,7 +42,7 @@ export default function Bid({
   price,
 }: {
   itemId: string;
-  item: Item;
+  item: Item & { bid: Bid[] };
   price: number;
 }) {
   const { user } = useKindeBrowserClient();
@@ -59,7 +59,7 @@ export default function Bid({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const bids = item.bids || [];
+    const bids = item.bid || [];
     const maximumBid =
       bids.length > 0
         ? Math.max(...bids.map((bid: any) => bid.bid_amount))
