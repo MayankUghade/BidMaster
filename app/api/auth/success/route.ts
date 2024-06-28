@@ -5,29 +5,36 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-  if (!user || user == null || !user.id)
-    throw new Error("something went wrong with authentication" + user);
+    if (!user || !user.id) {
+      console.error("Authentication error: user is null or missing ID", user);
+      throw new Error("something went wrong with authentication" + user);
+    }
 
-  let dbUser = await prisma.user.findUnique({
-    where: { kindeId: user.id },
-  });
-
-  if (!dbUser) {
-    dbUser = await prisma.user.create({
-      data: {
-        kindeId: user.id,
-        firstName: user.given_name ?? "",
-        lastName: user.family_name ?? "",
-        email: user.email ?? "",
-        image:
-          user.picture ??
-          `https://avatar.vercel.sh/${user?.given_name as string}`,
-      },
+    let dbUser = await prisma.user.findUnique({
+      where: { kindeId: user.id },
     });
-  }
 
-  return NextResponse.redirect("http://localhost:3000");
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          kindeId: user.id,
+          firstName: user.given_name ?? "",
+          lastName: user.family_name ?? "",
+          email: user.email ?? "",
+          image:
+            user.picture ??
+            `https://avatar.vercel.sh/${user?.given_name as string}`,
+        },
+      });
+    }
+
+    return NextResponse.redirect("http://localhost:3000");
+  } catch (error) {
+    console.error("Error during authentication process:", error);
+    return new Response("Error during authentication", { status: 500 });
+  }
 }
